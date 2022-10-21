@@ -29,4 +29,6 @@
 		where bno = #{bno}
 		order by rno asc
 	</select>
+	
 </mapper>
+

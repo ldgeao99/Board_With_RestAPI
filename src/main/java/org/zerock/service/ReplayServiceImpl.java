@@ -15,7 +15,7 @@ import lombok.extern.log4j.Log4j;
 @Service // 계층 구조상 비지니스 영역을 담당하는 객체임을 표시하기 위해 사용함
 public class ReplayServiceImpl implements ReplyService {
 
-	@Setter(onMethod_ = @Autowired)
+	@Setter(onMethod_ = @Autowired) // lombok의 Setter 를 이용한 주입
 	private ReplyMapper mapper;
 	
 	@Override

@@ -97,11 +97,13 @@
 	aria-labelledby="myModalLabel" aria-hidden="true">
 	<div class="modal-dialog">
 		<div class="modal-content">
+		
 			<div class="modal-header">
 				<button type="button" class="close" data-dismiss="modal"
 					aria-hidden="true">&times;</button>
 				<h4 class="modal-title" id="myModalLabel">REPLY MODAL</h4>
 			</div>
+			
 			<div class="modal-body">
 				<div class="modal-body">
 					<div class="form-group">
@@ -118,12 +120,14 @@
 					</div>
 				</div>
 			</div>
+			
 			<div class="modal-footer">
 				<button id="modalModBtn" type="button" class="btn btn-warning">Modify</button>
 				<button id="modalRemoveBtn" type="button" class="btn btn-danger">Remove</button>
 				<button id="modalRegisterBtn" type="button" class="btn btn-primary">Register</button>
 				<button id="modalCloseBtn" type="button" class="btn btn-default" data-dismiss="modal">Close</button> <!-- data-dismiss="modal" 가 있어야 닫는 동작이 작동함 -->
 			</div>
+			
 		</div>
 		<!-- /.modal-content -->
 	</div>
@@ -143,6 +147,7 @@
 	
 	/*
 	//for replyService add test
+	
 	replyService.add(
 	//add 함수의 첫번째 인자로 객체를 넘겨줌
 	{
@@ -155,28 +160,37 @@
 		alert("RESULT: " + result);
 	});
 
+	
 	// 모든 댓글을 가져오는 메소드 호출
-	replyService.getList({
+	replyService.getList(
+	//getList 함수의 첫번째 인자로 객체를 넘겨줌
+	{
 		bno : bnoValue,
 		page : 1
-	}, function(list) {
+	}, 
+	//getList 함수의 두번쨰 인자로 getJSON 처리 성공시 불리게될 콜백 함수를 넘겨줌
+	function(list) {
 		for (var i = 0, len = list.length || 0; i < len; i++) {
 			console.log(list[i]);
 		}
 	});
 
-	replyService.remove(16, function(count) {
+	
+	replyService.remove(16, function(result) {
 
-		console.log(count);
+		console.log(result);
 
-		if (count == "success") {
+		if (result == "success") {
 			alert("REMOVED");
 		}
 	}, function(err) {
 		alert("ERROR....");
 	});
 
-	replyService.update({
+	
+	
+	replyService.update(
+	{
 		rno : 22,
 		bno : bnoValue,
 		reply : "Modified Reply..."
@@ -198,14 +212,14 @@ $(document).ready(function(){
 	
 	var operForm = $("#operForm");
 	
-	// 게시글 수정페이지 이동
+	// 게시글 modify 버튼 클릭 이벤트 처리
 	$("button[data-oper='modify']").on("click", function(){
 		operForm.attr("action", "/board/modify").submit();
 	});
 	
-	// 게시글 삭제버튼 이벤트 처리 
+	// 게시글 list 버튼 클릭 이벤트 처리
 	$("button[data-oper='list']").on("click", function(){
-		operForm.find("#bno").remove();
+		operForm.find("#bno").remove(); 		// list로 넘어갈 때 url에 불필요한 정보가 담기지 않도록 전송전 제거해버림 
 		operForm.attr("action", "/board/list");
 		operForm.submit();
 	});
@@ -217,7 +231,7 @@ $(document).ready(function(){
 	var bnoValue = '<c:out value="${board.bno}"/>';
 	var replyUL = $(".chat");
 	
-	showList(1);
+	showList(1); // 댓글의 1페이지를 가져와 보여주기
 	
 	function showList(page){
 		
@@ -225,23 +239,28 @@ $(document).ready(function(){
 				{
 					bno : bnoValue,
 					page : page || 1 	// null 이면 1
-				}, function(list){
+				}, function(list){ // 여기서 list 객체는 JSON객체
+					
+					console.log("==list 콘솔 출력==");
+					console.log(list);
 					
 					var str = "";
 					
-					if(list == null || list.length == 0){
+					//정상적으로 댓글을 가져와도 댓글이 없다면 0개일 수 있어 없는대로 보여줌.
+					if(list == null || list.length == 0){ 
 						replyUL.html("");
 						return;
 					}
 					
+					//정상적으로 댓글을 가져와도 댓글이 없다면 0개일 수 있어 없는대로 보여줌.
 					for(var i = 0, len = list.length || 0; i < len; i++){
 						str += "<li class='left clearfix' data-rno='"+ list[i].rno +"'>";
 						str += "<div><div class='header'><strong class='primary-font'>" + list[i].replyer + "</strong>";
 						str += "<small class='pull-right text-muted'>" + replyService.displayTime((list[i].replyDate)) + "</small></div>";
-						str += "<p>" + list[i].reply + "</p></div></li>";
+						str += "<p>" + list[i].reply + "</p></div></li>"; // 날짜데이터를 JSON으로 받아서 가져오면 숫자로만 표현되어 정상날짜로 출력하려면 변환이 필요함
 					}
 					
-					replyUL.html(str);
+					replyUL.html(str); // append와 달리 안쪽의 내용을 날리고 다시 쓴다.
 					
 				}); // end getList()
 	}//end showList()
@@ -259,11 +278,16 @@ $(document).ready(function(){
 	
 	//New Reply 버튼을 눌렀을 때 이벤트 처리, 하나의 Modal에서 댓글 추가/수정/삭제를 다루는데, 댓글을 추가하는데 필요한 요소들만 남기고 모두 숨김
 	$("#addReplyBtn").on("click", function(e){
-		modal.find("input").val(""); 						// 모든 input 요소의 value 값을 초기화
-		modalInputReplyDate.closest("div").hide();			// 사용자에게 입력받을 부분이 아니므로 숨김
-		modal.find("button[id != 'modalCloseBtn']").hide();	// Close 버튼을 제외한 나머지를 숨김
+		// 모든 input 요소의 value 값을 초기화(모달은 한 화면에서 재사용 되기 때문에 이런거가 중요함)
+		modal.find("input").val(""); 						
 		
+		// 사용자에게 입력받을 부분이 아니므로 숨김
+		modalInputReplyDate.closest("div").hide();			
+		
+		// 아래 두 줄의 결과로 Register, Cancel 2가지 버튼만 보여짐
+		modal.find("button[id != 'modalCloseBtn']").hide();	// Close 버튼을 제외한 나머지를 숨김
 		modalRegisterBtn.show();
+		
 		$(".modal").modal("show");
 	});
 	
@@ -314,6 +338,7 @@ $(document).ready(function(){
 	});
 	
 	// 특정 댓글 클릭시 이벤트 처리(class 값이 chat인 요소 안쪽의 li 요소가 클릭되었을 때 이벤트처리)
+	//이벤트는 chat에 붙인거처럼 보이지만 li가 주인공이다.
 	$(".chat").on("click", "li", function(e){
 		var rno = $(this).data("rno");
 		console.log(rno);
@@ -324,7 +349,7 @@ $(document).ready(function(){
 			modalInputReplyDate.val(replyService.displayTime(reply.replyDate)).attr("readonly", "readonly");
 			modal.data("rno", reply.rno); // 특정요소에 data-rno='12' 와 같이 값을 담을 수 있음
 			
-			// 수정버튼, 삭제버튼 을 제외한 나머지 버튼을 숨김
+			// 수정버튼, 삭제버튼, 취소버튼을 제외한 나머지 버튼을 숨김
 			modal.find("button[id != 'modalCloseBtn']").hide();
 			modalModBtn.show();
 			modalRemoveBtn.show();

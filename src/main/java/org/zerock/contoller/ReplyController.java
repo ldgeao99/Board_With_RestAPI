@@ -26,27 +26,28 @@ import lombok.extern.log4j.Log4j;
 @AllArgsConstructor
 public class ReplyController {
 
-	private ReplyService service; // @AllArgsConstructor 을 통한 자동주입
+	private ReplyService service; // lombok의 @AllArgsConstructor 을 통한 자동주입(인터페이스 타입으로 선언했다는 점에 주목)
 	
 	// consumes : json타입의 정보를 받아 처리하겠다는 의미
 	@PostMapping(value="/new", consumes = "application/json", produces = {MediaType.TEXT_PLAIN_VALUE})	// 응답의 결과로 문자열을 반환하겠다는 의미
-	public ResponseEntity<String> create(@RequestBody ReplyVO vo){
+	public ResponseEntity<String> create(@RequestBody ReplyVO vo){ // @RequestBody 는 요청으로 들어온 json 문자열을 해석해서 java의 객체로 변환하는 용도 
+		// ResponseEntity을 반환타입으로 사용한 이유는 상태코드를 같이 응답의 결과로 주기 위함
 		
-		log.info("ReplyVO: " + vo);
+		log.info("ReplyVO: " + vo);						// 요청 데이터가 잘 도착했나 출력해봄
 		
 		int insertCount = service.register(vo);
 		
-		log.info("Reply INSERT COUNT: " + insertCount);
+		log.info("Reply INSERT COUNT: " + insertCount); // 처리결과 로그출력
 		
 		return insertCount == 1 
-				? new ResponseEntity<>("success", HttpStatus.OK)
+				? new ResponseEntity<>("success", HttpStatus.OK)		// ajax에서 success : function(result, status, xhr){} 부분의 result쪽의로  "success", status쪽으로 200 
 				: new ResponseEntity<>(HttpStatus.INTERNAL_SERVER_ERROR);
 	}
 	
 	@GetMapping(value="/pages/{bno}/{page}", produces= {MediaType.APPLICATION_XML_VALUE, MediaType.APPLICATION_JSON_UTF8_VALUE})
 	public ResponseEntity<List<ReplyVO>> getList(
 											@PathVariable("page") int page, 
-											@PathVariable("bno") Long bno){
+											@PathVariable("bno") Long bno){ // @PathVariable 는 url에 사용된 값을 변수로 가져오기 위해 사용함
 		log.info("getList.............");
 		Criteria cri = new Criteria(page, 10);
 		log.info(cri);
