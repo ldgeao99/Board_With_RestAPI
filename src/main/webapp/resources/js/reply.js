@@ -1,7 +1,7 @@
 
 console.log("Reply Module........");
  
-// 함수를 정의함과 동시에 호출함
+// 모듈패턴(관련 있는 함수들을 하나의 모듈처럼 묶음으로 구성하는 방식)으로 ajax 관련 코드를 파일을 분리하여 작성
 var replyService = (function(){
  
  	function add(reply, callback, error){		// 여기서 인자로 받은 콜백함수는 ajax 호출이 아래서 성공적으로 이뤄졌을 때 실행될 함수임
@@ -127,4 +127,4 @@ var replyService = (function(){
 		displayTime : displayTime
 	}; // replyService 객체 내부에 add 라는 메서드, getList라는 메서드가 존재하는 형태로 보여지게 됨
 
-})(); 
+})(); // 마지막에 함수를 호출함으로써 함수 묶음 객체를 반환함
