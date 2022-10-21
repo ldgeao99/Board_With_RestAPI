@@ -1,5 +1,4 @@
 create sequence seq_board;
-
 create table tbl_board(
 	bno number(10,0),
 	title varchar2(200) not null,		-- 제목
@@ -20,6 +19,28 @@ insert into tbl_board(bno, title, content, writer) values(seq_board.nextval, '�
 insert into tbl_board(bno, title, content, writer) values(seq_board.nextval, '테트스 제목', '테스트 내용', 'user00');
 
 select * from tbl_board;
+
+
+
+
+
+create sequence seq_reply;
+create table tbl_reply(
+	rno number(10, 0),
+	bno number(10, 0) not null,
+	reply varchar2(1000) not null,
+	replyer varchar2(50) not null,
+	replyDate date default sysdate,
+	updateDate date default sysdate
+);
+
+-- primary key 지정
+alter table tbl_reply add constraint pk_reply primary key(rno);
+
+-- forign key 지정
+alter table tbl_reply add constraint fk_reply_board foreign key(bno) references tbl_board(bno);
+
+select * from tbl_reply;
 
 commit;
 

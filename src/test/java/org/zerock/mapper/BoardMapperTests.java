@@ -24,6 +24,11 @@ public class BoardMapperTests {
 	private BoardMapper mapper; // 정의해둔 인터페이스로 자동 생성된 적절한 객체 -> 이 객체를 이용해 xml에 존재하는 SQL문을 실행 혹은 @Select 같은 어노테이션 SQL문 실행
 	
 	@Test
+	public void testMapper() {
+		log.info(mapper);
+	}
+	
+	@Test
 	public void testGetList() {
 		mapper.getList().forEach(board -> log.info(board));
 	}
