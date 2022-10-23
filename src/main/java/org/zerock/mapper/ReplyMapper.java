@@ -24,4 +24,6 @@ public interface ReplyMapper {
 	// 1) 별도의 객체로 구성하거나
 	// 2) Map을 이용하는 방식 
 	// 3) @Param을 이용해서 이름을 사용하는 방식 => 위에서 사용한 방식
+	
+	public int getCountByBno(Long bno);
 }

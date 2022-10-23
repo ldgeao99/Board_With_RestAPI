@@ -37,7 +37,8 @@ var replyService = (function(){
  			function(data){
  				//alert(typeof(data)); object
  				if(callback){		// callback 파라미터가 undifined가 아니라면(함수 호출시 넘겨받은 인자에 callback 함수가 담겨있었다면)
- 					callback(data);
+ 					//callback(data);	// 댓글 목록만 가져오는 경우
+ 					callback(data.replyCnt, data.list); // 총 댓글 수와 댓글목록을 가져오는 경우 
  				}
  			}).fail(function(xhr, status, err){
  					if(error){		// callback 파라미터가 undifined가 아니라면(함수 호출시 넘겨받은 인자에 error 처리 함수가 담겨있었다면)

@@ -89,6 +89,9 @@
 </div>
 <!-- /.row -->
 
+<div class="panel-footer">
+	<!-- 댓글 페이지번호를 출력하는 곳 -->
+</div>
 
 <%@include file="../includes/footer.jsp"%>
 
@@ -138,6 +141,7 @@
 
 <script type="text/javascript" src="/resources/js/reply.js"></script>
 <script>
+/*
 	console.log(replyService);
 
 	console.log("=======================");
@@ -145,7 +149,7 @@
 	
 	var bnoValue = '<c:out value="${board.bno}"/>';
 	
-	/*
+	
 	//for replyService add test
 	
 	replyService.add(
@@ -202,8 +206,7 @@
 	replyService.get(10, function(data) {
 		console.log(data);
 	}); 
-	*/
-	
+*/
 </script>
 
 <script type="text/javascript">
@@ -239,10 +242,16 @@ $(document).ready(function(){
 				{
 					bno : bnoValue,
 					page : page || 1 	// null 이면 1
-				}, function(list){ // 여기서 list 객체는 JSON객체
+				}, function(replyCnt, list){ // 여기서 list 객체는 JSON객체
 					
-					console.log("==list 콘솔 출력==");
-					console.log(list);
+					console.log("replyCnt: " + replyCnt);
+					console.log("list: " + list);
+					
+					if(page == -1){
+						pageNum = Math.ceil(replyCnt/10.0);
+						showList(pageNum); // 재호출
+						return;
+					}
 					
 					var str = "";
 					
@@ -262,6 +271,7 @@ $(document).ready(function(){
 					
 					replyUL.html(str); // append와 달리 안쪽의 내용을 날리고 다시 쓴다.
 					
+					showReplyPage(replyCnt);
 				}); // end getList()
 	}//end showList()
 	
@@ -307,7 +317,8 @@ $(document).ready(function(){
 			modal.find("input").val("");
 			modal.modal("hide");
 			
-			showList(1); // 댓글목록 갱신
+			//showList(1); // 댓글목록 갱신
+			showList(-1);
 		});
 	});
 	
@@ -321,7 +332,7 @@ $(document).ready(function(){
 		replyService.update(reply, function(result){
 			alert(result);
 			modal.modal("hide");
-			showList(1); // 댓글목록 갱신
+			showList(pageNum); // 댓글목록 갱신, pageNum은 저 아래 있는 값을 사용함
 		});
 	});
 	
@@ -333,7 +344,7 @@ $(document).ready(function(){
 		replyService.remove(rno, function(result){
 			alert(result);
 			modal.modal("hide");
-			showList(1); // 댓글목록 갱신
+			showList(pageNum); // 댓글목록 갱신, pageNum은 저 아래 있는 값을 사용함
 		});
 	});
 	
@@ -357,5 +368,74 @@ $(document).ready(function(){
 			$(".modal").modal("show");
 		});
 	});
+	
+	/* 이하 댓글 페이지번호 출력을 위한 코드 */
+	var pageNum = 1; // 맨 처음엔 1 이지만 함수가 호출됨에 따라 갑싱 변함
+	var replyPageFooter = $(".panel-footer");
+	
+	function showReplyPage(replyCnt){
+		
+		//pageNum에 따른 10단위의 시작페이지, 끝페이지를 구함
+		var endNum = Math.ceil(pageNum / 10.0) * 10;
+		var startNum = endNum - 9;
+		
+		var prev = (startNum != 1);
+		var next = false;
+		
+		//10단위의 endNum을 그대로 사용하면 안되는 경우 endNum을 다시구함 
+		if(endNum * 10 >= replyCnt){
+			endNum = Math.ceil(replyCnt / 10.0);
+			//next = false;
+		}
+		
+		
+		if(endNum * 10 < replyCnt){
+			next = true;
+		}
+		
+		var str = "<ul class='pagination pull-right'>";
+		
+		//Previous 버튼 출력여부에 따라 버튼 표시
+		if(prev){
+			str += "<li class='page-item'><a class='page-link' href='" + (startNum-1) + "'>Previous</a></li>";
+		}
+		
+		//가운데 숫자 출력
+		for(var i = startNum; i <= endNum; i++){
+			
+			var active = (pageNum == i ? "active" : "");
+			
+			str += "<li class='page-item " + active +"'>" + "<a class='page-link' href='"+ i +"'>" + i + "</a></li>";
+		}
+		
+		//Next 버튼 출력여부에 따라 버튼 표시
+		if(next){
+			str += "<li class='page-item'><a class='page-link' href='" + (endNum + 1) +"'>Next</a></li>";		
+		}
+		
+		str += "</ul></div>";
+		
+		console.log(str);
+		
+		replyPageFooter.html(str);
+	}
+	
+	/* 페이지 번호 클릭시 해당 페이지에 맞는 댓글들 가져오게 이벤트 처리하기 */
+	replyPageFooter.on("click", "li a", function(e){
+		
+		e.preventDefault();
+		
+		console.log("page click");
+		
+		var targetPageNum = $(this).attr("href");
+		
+		console.log("targetPageNum: " + targetPageNum);
+		
+		pageNum = targetPageNum;
+		
+		showList(pageNum);
+
+	});
+	
 });
 </script>

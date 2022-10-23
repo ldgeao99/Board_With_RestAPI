@@ -42,5 +42,10 @@ alter table tbl_reply add constraint fk_reply_board foreign key(bno) references 
 
 select * from tbl_reply;
 
+-- 특정 게시물에 속한 댓글을 찾는 속도를 높이기위해 인덱스 생성(첫째열 : bno 내림차순, 둘째열 : bno가 같으면 rno 오름차순) 429p.
+create index index_reply on tbl_reply(bno desc, rno asc);
+
+insert into tbl_reply(rno, bno, reply, replyer) values(seq_reply.nextval, 3145745, 'kkk', 'user99');
+
 commit;
 

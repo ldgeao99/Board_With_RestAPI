@@ -83,4 +83,13 @@ public class ReplyMapperTests {
 		replies.forEach(reply -> log.info(reply));
 	}
 	
+	@Test
+	public void testList2() {
+		Criteria cri = new Criteria(2, 10);
+		
+		List<ReplyVO> replies = mapper.getListWithPaging(cri, bnoArr[0]); // 게시물 3145745L 에 달린 댓글들을 모두 가져옴
+		
+		replies.forEach(reply -> log.info(reply));
+	}
+	
 }
