@@ -3,6 +3,7 @@ package org.zerock.domain;
 import lombok.Getter;
 import lombok.Setter;
 
+/* 계산결과를 model 에 붙여서 보낸다음 jsp에서 그려내는 방식을 사용할때 사용하게 되는 클래스로 ajax 방식에서는 필요X */
 @Getter
 @Setter
 public class PageDTO {
